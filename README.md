@@ -24,7 +24,13 @@ Uma aplicação de lista de tarefas moderna e responsiva desenvolvida com HTML, 
 
 ## Capturas de Tela
 
-[Adicione capturas de tela aqui]
+![Captura de tela da aplicação](Assets/img/Beige%20Minimalist%20Mockup%20Instagram%20Post.png)
+
+### Versão Desktop
+![Versão Desktop](Assets/img/Homepage.png)
+
+### Versão Mobile
+![Versão Mobile](Assets/img/Home-mobile.png)
 
 ## Como Usar
 
