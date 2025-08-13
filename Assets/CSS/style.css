@@ -1,5 +1,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+:root {
+    /* Variáveis de cores - Modo Claro */
+    --bg-gradient-start: #667eea;
+    --bg-gradient-end: #764ba2;
+    --container-bg: rgba(255, 255, 255, 0.95);
+    --text-primary: #4a4a4a;
+    --text-secondary: #666;
+    --input-bg: #f9f9f9;
+    --input-bg-focus: #fff;
+    --task-item-bg: #f9f9f9;
+    --task-item-hover: #f0f0f0;
+    --task-completed-color: #aaa;
+    --scrollbar-track: #f0f0f0;
+    --notification-success-start: #43c6ac;
+    --notification-success-end: #28a745;
+    --notification-error-start: #ff416c;
+    --notification-error-end: #ff4b2b;
+    --footer-text: white;
+    --empty-list-color: #888;
+    --empty-list-icon: #ccc;
+}
+
+[data-theme="dark"] {
+    /* Variáveis de cores - Modo Escuro */
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --container-bg: rgba(30, 30, 45, 0.95);
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --input-bg: #2a2a3a;
+    --input-bg-focus: #2f2f42;
+    --task-item-bg: #2a2a3a;
+    --task-item-hover: #323248;
+    --task-completed-color: #777;
+    --scrollbar-track: #2a2a3a;
+    --notification-success-start: #0f8a5f;
+    --notification-success-end: #1a6e3d;
+    --notification-error-start: #b52e43;
+    --notification-error-end: #a82c2c;
+    --footer-text: #e0e0e0;
+    --empty-list-color: #777;
+    --empty-list-icon: #444;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -8,7 +52,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -17,17 +61,18 @@ body {
     padding: 20px;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
+    transition: background 0.3s ease;
 }
 
 .container {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--container-bg);
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 500px;
     padding: 30px;
     backdrop-filter: blur(5px);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .container:hover {
@@ -39,8 +84,47 @@ body {
     margin-bottom: 30px;
 }
 
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 18px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+[data-theme="dark"] .theme-toggle .fa-moon {
+    display: none;
+}
+
+[data-theme="dark"] .theme-toggle::before {
+    content: "\f185";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--text-primary);
+}
+
 h1 {
-    color: #4a4a4a;
+    color: var(--text-primary);
     font-weight: 600;
     margin-bottom: 10px;
     position: relative;
@@ -56,12 +140,12 @@ h1::after {
     transform: translateX(-50%);
     width: 70px;
     height: 4px;
-    background: linear-gradient(to right, #667eea, #764ba2);
+    background: linear-gradient(to right, var(--bg-gradient-start), var(--bg-gradient-end));
     border-radius: 2px;
 }
 
 .app-description {
-    color: #666;
+    color: var(--text-secondary);
     font-size: 16px;
     margin-bottom: 5px;
     font-weight: 300;
@@ -82,15 +166,16 @@ h1::after {
     font-size: 16px;
     outline: none;
     transition: all 0.3s ease;
-    background-color: #f9f9f9;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
 }
 
 #task-input:focus {
-    background-color: #fff;
+    background-color: var(--input-bg-focus);
 }
 
 #add-button {
-    background: linear-gradient(to right, #667eea, #764ba2);
+    background: linear-gradient(to right, var(--bg-gradient-start), var(--bg-gradient-end));
     color: white;
     border: none;
     padding: 15px 20px;
@@ -104,8 +189,8 @@ h1::after {
 }
 
 #add-button:hover {
-    background: linear-gradient(to right, #764ba2, #667eea);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(to right, var(--bg-gradient-end), var(--bg-gradient-start));
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .tasks-container {
@@ -122,12 +207,12 @@ h1::after {
 }
 
 .tasks-container::-webkit-scrollbar-track {
-    background: #f0f0f0;
+    background: var(--scrollbar-track);
     border-radius: 10px;
 }
 
 .tasks-container::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #667eea, #764ba2);
+    background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end));
     border-radius: 10px;
 }
 
@@ -142,7 +227,7 @@ h1::after {
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: var(--task-item-bg);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
     animation: fadeIn 0.5s ease-out forwards;
@@ -155,7 +240,7 @@ h1::after {
 }
 
 .task-item:hover {
-    background-color: #f0f0f0;
+    background-color: var(--task-item-hover);
     transform: translateX(5px);
 }
 
@@ -169,11 +254,12 @@ h1::after {
     padding: 0 10px;
     font-size: 16px;
     transition: all 0.3s ease;
+    color: var(--text-primary);
 }
 
 .completed {
     text-decoration: line-through;
-    color: #aaa;
+    color: var(--task-completed-color);
     font-style: italic;
 }
 
@@ -236,7 +322,7 @@ h1::after {
     left: 0;
     right: 0;
     text-align: center;
-    color: white;
+    color: var(--footer-text);
     font-size: 14px;
     padding: 10px;
     z-index: 10;
@@ -270,7 +356,7 @@ h1::after {
 }
 
 .social-links a {
-    color: white;
+    color: var(--footer-text);
     font-size: 20px;
     transition: all 0.3s ease;
     opacity: 0.8;
@@ -285,13 +371,13 @@ h1::after {
 .empty-list {
     text-align: center;
     padding: 30px 0;
-    color: #888;
+    color: var(--empty-list-color);
 }
 
 .empty-list i {
     font-size: 40px;
     margin-bottom: 15px;
-    color: #ccc;
+    color: var(--empty-list-icon);
     opacity: 0.7;
 }
 
@@ -323,11 +409,11 @@ h1::after {
 }
 
 .notification.success {
-    background: linear-gradient(to right, #43c6ac, #28a745);
+    background: linear-gradient(to right, var(--notification-success-start), var(--notification-success-end));
 }
 
 .notification.error {
-    background: linear-gradient(to right, #ff416c, #ff4b2b);
+    background: linear-gradient(to right, var(--notification-error-start), var(--notification-error-end));
 }
 
 .notification i {

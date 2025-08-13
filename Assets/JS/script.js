@@ -3,6 +3,9 @@ const taskInput = document.getElementById('task-input');
 const addButton = document.getElementById('add-button');
 const tasksList = document.getElementById('tasks-list');
 
+// Selecionando o botão de alternância de tema
+const themeToggle = document.getElementById('theme-toggle');
+
 // Configuração inicial
 document.addEventListener('DOMContentLoaded', () => {
     // Foca no input ao carregar a página
@@ -10,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Renderiza as tarefas salvas
     renderTasks();
+    
+    // Carrega o tema salvo
+    loadTheme();
     
     // Atualiza o nome do autor no rodapé (se existir)
     const authorElement = document.querySelector('.author');
@@ -29,6 +35,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// Função para alternar entre os temas claro e escuro
+function toggleTheme() {
+    if (document.body.getAttribute('data-theme') === 'dark') {
+        document.body.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+    } else {
+        document.body.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+
+// Função para carregar o tema salvo
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+    }
+}
 
 // Array para armazenar as tarefas
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -292,3 +317,6 @@ function updateSocialLinks() {
 
 // Chama a função para atualizar links sociais
 document.addEventListener('DOMContentLoaded', updateSocialLinks);
+
+// Event listener para o botão de alternância de tema
+themeToggle.addEventListener('click', toggleTheme);
