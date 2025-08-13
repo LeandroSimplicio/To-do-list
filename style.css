@@ -1,0 +1,461 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    padding: 30px;
+    backdrop-filter: blur(5px);
+    transition: transform 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+}
+
+.app-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: #4a4a4a;
+    font-weight: 600;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 15px;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 4px;
+    background: linear-gradient(to right, #667eea, #764ba2);
+    border-radius: 2px;
+}
+
+.app-description {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 5px;
+    font-weight: 300;
+}
+
+.input-container {
+    display: flex;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#task-input {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+#task-input:focus {
+    background-color: #fff;
+}
+
+#add-button {
+    background: linear-gradient(to right, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#add-button:hover {
+    background: linear-gradient(to right, #764ba2, #667eea);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.tasks-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-top: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #764ba2 #f0f0f0;
+}
+
+.tasks-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tasks-container::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #667eea, #764ba2);
+    border-radius: 10px;
+}
+
+#tasks-list {
+    list-style-type: none;
+}
+
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    animation: fadeIn 0.5s ease-out forwards;
+    touch-action: manipulation;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.task-item:hover {
+    background-color: #f0f0f0;
+    transform: translateX(5px);
+}
+
+.task-item:last-child {
+    margin-bottom: 0;
+}
+
+.task-text {
+    flex: 1;
+    word-break: break-word;
+    padding: 0 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #aaa;
+    font-style: italic;
+}
+
+.task-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.complete-btn, .edit-btn, .delete-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 18px;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.complete-btn {
+    color: #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.edit-btn {
+    color: #2196F3;
+    background-color: rgba(33, 150, 243, 0.1);
+}
+
+.delete-btn {
+    color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+.complete-btn:hover {
+    background-color: rgba(76, 175, 80, 0.2);
+    transform: scale(1.1);
+}
+
+.edit-btn:hover {
+    background-color: rgba(33, 150, 243, 0.2);
+    transform: scale(1.1);
+}
+
+.delete-btn:hover {
+    background-color: rgba(244, 67, 54, 0.2);
+    transform: scale(1.1);
+}
+
+/* Estilos do rodapé */
+.footer {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    padding: 10px;
+    z-index: 10;
+}
+
+.footer p {
+    margin-bottom: 8px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.footer .fa-heart {
+    color: #ff4081;
+    animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.author {
+    font-weight: 600;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.social-links a {
+    color: white;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.social-links a:hover {
+    opacity: 1;
+    transform: translateY(-3px);
+}
+
+/* Estilo para lista vazia */
+.empty-list {
+    text-align: center;
+    padding: 30px 0;
+    color: #888;
+}
+
+.empty-list i {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #ccc;
+    opacity: 0.7;
+}
+
+.empty-list p {
+    font-size: 16px;
+}
+
+/* Estilo para notificações */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification.success {
+    background: linear-gradient(to right, #43c6ac, #28a745);
+}
+
+.notification.error {
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+}
+
+.notification i {
+    font-size: 18px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    
+    .container {
+        width: 95%;
+        padding: 25px 20px;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .app-description {
+        font-size: 14px;
+    }
+    
+    .input-container {
+        flex-direction: column;
+        border-radius: 8px;
+        overflow: visible;
+        box-shadow: none;
+    }
+    
+    #task-input {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    #add-button {
+        width: 100%;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .task-item {
+        padding: 12px;
+    }
+    
+    .task-text {
+        font-size: 14px;
+    }
+    
+    .task-actions {
+        gap: 5px;
+    }
+    
+    .complete-btn, .edit-btn, .delete-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+    
+    .footer {
+        position: relative;
+        margin-top: 30px;
+        padding: 15px;
+    }
+    
+    .notification {
+        left: 20px;
+        right: 20px;
+        text-align: center;
+        justify-content: center;
+        font-size: 13px;
+        padding: 10px 15px;
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 400px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 15px;
+    }
+    
+    h1 {
+        font-size: 22px;
+    }
+    
+    .app-description {
+        font-size: 13px;
+    }
+    
+    #task-input {
+        padding: 12px;
+        font-size: 14px;
+    }
+    
+    #add-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .task-item {
+        padding: 10px;
+    }
+    
+    .task-text {
+        font-size: 13px;
+    }
+    
+    .complete-btn, .edit-btn, .delete-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+        padding: 6px;
+    }
+    
+    .footer {
+        font-size: 12px;
+    }
+    
+    .social-links a {
+        font-size: 16px;
+    }
+}

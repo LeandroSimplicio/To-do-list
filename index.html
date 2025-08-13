@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Lista de Tarefas | Projeto</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <meta
+      name="description"
+      content="Uma aplicação de lista de tarefas moderna e responsiva"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="app-header">
+        <h1>Lista de Tarefas</h1>
+        <p class="app-description">
+          Organize suas tarefas de forma simples e eficiente
+        </p>
+      </div>
+
+      <div class="input-container">
+        <input
+          type="text"
+          id="task-input"
+          placeholder="Adicione uma nova tarefa..."
+        />
+        <button id="add-button">Adicionar</button>
+      </div>
+
+      <div class="tasks-container">
+        <ul id="tasks-list">
+          <!-- As tarefas serão adicionadas aqui pelo JavaScript -->
+        </ul>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>
+        Desenvolvido com <i class="fas fa-heart"></i> por
+        <span class="author">Seu Nome</span>
+      </p>
+      <div class="social-links">
+        <a
+          href="https://github.com/LeandroSimplicio"
+          target="_blank"
+          title="GitHub"
+        >
+          <i class="fab fa-github"></i>
+        </a>
+        <a
+          href="https://www.linkedin.com/in/leandro-simplicio/"
+          target="_blank"
+          title="LinkedIn"
+        >
+          <i class="fab fa-linkedin"></i>
+        </a>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
