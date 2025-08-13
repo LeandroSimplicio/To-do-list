@@ -1,4 +1,4 @@
-# Lista de Tarefas
+# Lista de Tarefas (To-do-list)
 
 Uma aplicação de lista de tarefas moderna e responsiva desenvolvida com HTML, CSS e JavaScript puro.
 
@@ -41,7 +41,7 @@ Uma aplicação de lista de tarefas moderna e responsiva desenvolvida com HTML, 
 
 ## Autor
 
-[Seu Nome] - [Seu LinkedIn] - [Seu GitHub]
+Leandro Simplicio - [LinkedIn](https://www.linkedin.com/in/leandro-simplicio/) - [GitHub](https://github.com/LeandroSimplicio)
 
 ## Licença
 
