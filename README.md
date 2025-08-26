@@ -89,7 +89,7 @@ JWT_SECRET=seu_jwt_secret_muito_seguro_aqui
 JWT_EXPIRE=7d
 
 # Configurações do Servidor
-PORT=3003
+PORT=3004
 NODE_ENV=development
 
 # Configurações de Segurança
