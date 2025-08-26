@@ -1,40 +1,36 @@
-// Selecionando elementos do DOM
-const taskInput = document.getElementById('task-input');
-const addButton = document.getElementById('add-button');
-const tasksList = document.getElementById('tasks-list');
-
-// Selecionando o botão de alternância de tema
-const themeToggle = document.getElementById('theme-toggle');
+// Script principal atualizado para integração com autenticação e API
 
 // Configuração inicial
 document.addEventListener('DOMContentLoaded', () => {
-    // Foca no input ao carregar a página
-    taskInput.focus();
-    
-    // Renderiza as tarefas salvas
-    renderTasks();
-    
     // Carrega o tema salvo
     loadTheme();
     
-    // Atualiza o nome do autor no rodapé (se existir)
-    const authorElement = document.querySelector('.author');
-    if (authorElement) {
-        const savedAuthor = localStorage.getItem('author');
-        if (savedAuthor) {
-            authorElement.textContent = savedAuthor;
-        } else {
-            // Solicita o nome do usuário na primeira visita
-            setTimeout(() => {
-                const userName = prompt('Como você gostaria de ser chamado?', 'Seu Nome');
-                if (userName && userName.trim() !== '' && userName !== 'Seu Nome') {
-                    authorElement.textContent = userName;
-                    localStorage.setItem('author', userName);
-                }
-            }, 1000);
-        }
+    // Inicializar componentes apenas se estiver autenticado
+    if (window.authManager && window.authManager.isAuthenticated()) {
+        initializeApp();
     }
+    
+    // Atualizar links sociais
+    updateSocialLinks();
+    
+    // Melhorar experiência mobile
+    enhanceMobileExperience();
 });
+
+// Função para inicializar a aplicação após autenticação
+function initializeApp() {
+    // Carregar dados do dashboard
+    if (window.taskManager) {
+        window.taskManager.loadTasks();
+        window.taskManager.loadDashboardStats();
+    }
+    
+    // Focar no input de tarefa
+    const taskInput = document.getElementById('task-input');
+    if (taskInput) {
+        taskInput.focus();
+    }
+}
 
 // Função para alternar entre os temas claro e escuro
 function toggleTheme() {
@@ -44,6 +40,12 @@ function toggleTheme() {
     } else {
         document.body.setAttribute('data-theme', 'dark');
         localStorage.setItem('theme', 'dark');
+    }
+    
+    // Atualizar preferências do usuário se estiver logado
+    if (window.authManager && window.authManager.isAuthenticated()) {
+        const theme = document.body.getAttribute('data-theme') || 'light';
+        updateUserPreferences({ theme });
     }
 }
 
@@ -55,268 +57,188 @@ function loadTheme() {
     }
 }
 
-// Array para armazenar as tarefas
-let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+// Função para atualizar preferências do usuário
+async function updateUserPreferences(preferences) {
+    try {
+        await api.updateUserPreferences(preferences);
+    } catch (error) {
+        console.error('Erro ao atualizar preferências:', error);
+    }
+}
 
-// Função para renderizar as tarefas na tela
-function renderTasks() {
-    // Limpa a lista antes de renderizar
-    tasksList.innerHTML = '';
+// Função para melhorar a experiência mobile
+function enhanceMobileExperience() {
+    // Detectar se é um dispositivo móvel
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
-    // Mensagem quando não há tarefas
-    if (tasks.length === 0) {
-        const emptyMessage = document.createElement('div');
-        emptyMessage.className = 'empty-list';
-        emptyMessage.innerHTML = '<i class="fas fa-clipboard-list"></i><p>Sua lista está vazia. Adicione uma nova tarefa!</p>';
-        tasksList.appendChild(emptyMessage);
+    if (isMobile) {
+        // Adicionar classe para dispositivos móveis
+        document.body.classList.add('mobile-device');
+        
+        // Ajustar viewport para evitar zoom em inputs
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        }
+        
+        // Melhorar interação com tarefas em dispositivos móveis
+        document.addEventListener('touchstart', handleTouchStart, { passive: true });
+        document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    }
+}
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+function handleTouchStart(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+}
+
+function handleTouchMove(e) {
+    if (!touchStartX || !touchStartY) return;
+    
+    const touchEndX = e.touches[0].clientX;
+    const touchEndY = e.touches[0].clientY;
+    
+    const diffX = touchStartX - touchEndX;
+    const diffY = touchStartY - touchEndY;
+    
+    // Detectar swipe horizontal em itens de tarefa
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        const taskItem = e.target.closest('.task-item');
+        if (taskItem) {
+            if (diffX > 0) {
+                // Swipe para esquerda - mostrar ações
+                taskItem.classList.add('swipe-left');
+            } else {
+                // Swipe para direita - esconder ações
+                taskItem.classList.remove('swipe-left');
+            }
+        }
+    }
+    
+    touchStartX = 0;
+    touchStartY = 0;
+}
+
+// Função para atualizar links sociais
+function updateSocialLinks() {
+    const socialLinks = document.querySelectorAll('.social-links a');
+    
+    socialLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            // Adicionar analytics ou tracking se necessário
+            console.log(`Link social clicado: ${link.href}`);
+        });
+    });
+}
+
+// Função para exportar dados do usuário
+async function exportUserData() {
+    if (!window.authManager || !window.authManager.isAuthenticated()) {
         return;
     }
     
-    // Renderiza cada tarefa
-    tasks.forEach((task, index) => {
-        const taskItem = document.createElement('li');
-        taskItem.classList.add('task-item');
-        if (task.completed) {
-            taskItem.classList.add('completed');
+    try {
+        const data = await api.exportUserData();
+        
+        // Criar arquivo para download
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `todo-list-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        URL.revokeObjectURL(url);
+        
+        if (window.taskManager) {
+            window.taskManager.showNotification('Dados exportados com sucesso!', 'success');
         }
+    } catch (error) {
+        console.error('Erro ao exportar dados:', error);
+        if (window.taskManager) {
+            window.taskManager.showNotification('Erro ao exportar dados', 'error');
+        }
+    }
+}
+
+// Função para importar dados do usuário
+function importUserData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
         
-        // Cria o elemento de texto da tarefa
-        const taskText = document.createElement('span');
-        taskText.classList.add('task-text');
-        taskText.textContent = task.text;
-        
-        // Cria o container para os botões de ação
-        const taskActions = document.createElement('div');
-        taskActions.classList.add('task-actions');
-        
-        // Botão de completar tarefa
-        const completeBtn = document.createElement('button');
-        completeBtn.classList.add('complete-btn');
-        completeBtn.innerHTML = task.completed ? '<i class="fas fa-undo"></i>' : '<i class="fas fa-check"></i>';
-        completeBtn.title = task.completed ? 'Desfazer' : 'Completar';
-        completeBtn.addEventListener('click', () => toggleComplete(index));
-        
-        // Botão de editar tarefa
-        const editBtn = document.createElement('button');
-        editBtn.classList.add('edit-btn');
-        editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-        editBtn.title = 'Editar';
-        editBtn.addEventListener('click', () => editTask(index));
-        
-        // Botão de deletar tarefa
-        const deleteBtn = document.createElement('button');
-        deleteBtn.classList.add('delete-btn');
-        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-        deleteBtn.title = 'Deletar';
-        deleteBtn.addEventListener('click', () => deleteTask(index));
-        
-        // Adiciona os botões ao container de ações
-        taskActions.appendChild(completeBtn);
-        taskActions.appendChild(editBtn);
-        taskActions.appendChild(deleteBtn);
-        
-        // Adiciona os elementos ao item da tarefa
-        taskItem.appendChild(taskText);
-        taskItem.appendChild(taskActions);
-        
-        // Adiciona o item da tarefa à lista
-        tasksList.appendChild(taskItem);
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            
+            // Validar estrutura dos dados
+            if (!data.user || !data.tasks) {
+                throw new Error('Formato de arquivo inválido');
+            }
+            
+            // Confirmar importação
+            if (!confirm('Isso irá substituir todos os seus dados atuais. Continuar?')) {
+                return;
+            }
+            
+            // Importar tarefas
+            for (const task of data.tasks) {
+                await api.createTask({
+                    title: task.title,
+                    category: task.category,
+                    priority: task.priority,
+                    dueDate: task.dueDate,
+                    completed: task.completed
+                });
+            }
+            
+            // Recarregar dados
+            if (window.taskManager) {
+                window.taskManager.loadTasks();
+                window.taskManager.loadDashboardStats();
+                window.taskManager.showNotification('Dados importados com sucesso!', 'success');
+            }
+            
+        } catch (error) {
+            console.error('Erro ao importar dados:', error);
+            if (window.taskManager) {
+                window.taskManager.showNotification('Erro ao importar dados: ' + error.message, 'error');
+            }
+        }
     });
     
-    // Salva as tarefas no localStorage
-    saveTasks();
+    input.click();
 }
 
-// Função para adicionar uma nova tarefa
-function addTask() {
-    const taskText = taskInput.value.trim();
-    
-    if (taskText !== '') {
-        // Adiciona a nova tarefa
-        tasks.push({
-            text: taskText,
-            completed: false,
-            createdAt: new Date().toISOString()
-        });
-        
-        // Limpa o input
-        taskInput.value = '';
-        
-        // Renderiza as tarefas atualizadas
-        renderTasks();
-        
-        // Foca no input para adicionar outra tarefa
-        taskInput.focus();
-        
-        // Feedback visual
-        showNotification('Tarefa adicionada com sucesso!', 'success');
-    } else {
-        // Feedback visual para campo vazio
-        showNotification('Por favor, digite uma tarefa!', 'error');
-        taskInput.focus();
-    }
-}
-
-// Função para mostrar notificações
-function showNotification(message, type) {
-    // Remove notificações anteriores
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Botão de alternância de tema
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
     }
     
-    // Cria a notificação
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    
-    // Adiciona ícone baseado no tipo
-    const icon = document.createElement('i');
-    icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
-    notification.prepend(icon);
-    
-    // Adiciona ao corpo do documento
-    document.body.appendChild(notification);
-    
-    // Anima a entrada
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 10);
-    
-    // Remove após alguns segundos
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 3000);
-}
-
-// Função para marcar/desmarcar uma tarefa como completa
-function toggleComplete(index) {
-    tasks[index].completed = !tasks[index].completed;
-    
-    // Adiciona timestamp de conclusão
-    if (tasks[index].completed) {
-        tasks[index].completedAt = new Date().toISOString();
-        showNotification('Tarefa concluída!', 'success');
-    } else {
-        delete tasks[index].completedAt;
-        showNotification('Tarefa reativada!', 'success');
+    // Botões de exportar/importar (se existirem)
+    const exportBtn = document.getElementById('export-data');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportUserData);
     }
     
-    renderTasks();
-}
-
-// Função para editar uma tarefa
-function editTask(index) {
-    const newText = prompt('Editar tarefa:', tasks[index].text);
-    
-    if (newText !== null && newText.trim() !== '') {
-        tasks[index].text = newText.trim();
-        tasks[index].updatedAt = new Date().toISOString();
-        renderTasks();
-        showNotification('Tarefa atualizada!', 'success');
-    } else if (newText !== null) {
-        showNotification('A tarefa não pode estar vazia!', 'error');
-    }
-}
-
-// Função para deletar uma tarefa
-function deleteTask(index) {
-    // Armazena o elemento da tarefa para animação
-    const taskElement = document.querySelectorAll('.task-item')[index];
-    
-    if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
-        // Anima a remoção
-        taskElement.style.opacity = '0';
-        taskElement.style.transform = 'translateX(30px)';
-        
-        setTimeout(() => {
-            // Remove do array após a animação
-            tasks.splice(index, 1);
-            renderTasks();
-            showNotification('Tarefa removida!', 'success');
-        }, 300);
-    }
-}
-
-// Função para salvar as tarefas no localStorage
-function saveTasks() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-}
-
-// Event Listeners
-addButton.addEventListener('click', addTask);
-
-// Adicionar tarefa ao pressionar Enter no input
-taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        addTask();
+    const importBtn = document.getElementById('import-data');
+    if (importBtn) {
+        importBtn.addEventListener('click', importUserData);
     }
 });
 
-// Efeito de foco no input
-taskInput.addEventListener('focus', () => {
-    document.querySelector('.input-container').style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.25)';
-});
-
-taskInput.addEventListener('blur', () => {
-    document.querySelector('.input-container').style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-});
-
-// Melhorar a experiência em dispositivos móveis
-function enhanceMobileExperience() {
-    // Verificar se é um dispositivo móvel
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    
-    if (isMobile) {
-        // Ajustar o comportamento do teclado virtual
-        taskInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') {
-                addTask();
-                // Fechar o teclado virtual após adicionar a tarefa
-                taskInput.blur();
-            }
-        });
-        
-        // Melhorar o comportamento de toque nos botões
-        document.querySelectorAll('.complete-btn, .edit-btn, .delete-btn').forEach(btn => {
-            btn.addEventListener('touchstart', function() {
-                this.style.transform = 'scale(0.95)';
-            });
-            
-            btn.addEventListener('touchend', function() {
-                this.style.transform = 'scale(1)';
-            });
-        });
-        
-        // Evitar zoom ao tocar nos inputs em iOS
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
-        });
-    }
-}
-
-// Chamar a função quando o DOM estiver carregado
-document.addEventListener('DOMContentLoaded', enhanceMobileExperience);
-
-// Atualiza os links sociais com os do usuário (se fornecidos)
-function updateSocialLinks() {
-    const githubLink = localStorage.getItem('githubLink');
-    const linkedinLink = localStorage.getItem('linkedinLink');
-    
-    if (githubLink) {
-        document.querySelector('a[title="GitHub"]').href = githubLink;
-    }
-    
-    if (linkedinLink) {
-        document.querySelector('a[title="LinkedIn"]').href = linkedinLink;
-    }
-}
-
-// Chama a função para atualizar links sociais
-document.addEventListener('DOMContentLoaded', updateSocialLinks);
-
-// Event listener para o botão de alternância de tema
-themeToggle.addEventListener('click', toggleTheme);
+// Função global para inicializar após login
+window.initializeAppAfterLogin = initializeApp;

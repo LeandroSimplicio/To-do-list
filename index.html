@@ -2,10 +2,16 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <meta name="theme-color" content="#667eea" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <title>Lista de Tarefas | Projeto</title>
     <link rel="stylesheet" href="Assets/CSS/style.css" />
     <link rel="stylesheet" href="Assets/CSS/responsive.css" />
@@ -13,40 +19,278 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+
     <meta
       name="description"
       content="Uma aplicação de lista de tarefas moderna e responsiva"
     />
   </head>
   <body>
-    <div class="container">
+    <!-- Tela de Login/Registro -->
+    <div id="auth-container" class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1>Lista de Tarefas</h1>
+          <p class="auth-description">
+            Organize suas tarefas de forma simples e eficiente
+          </p>
+        </div>
+
+        <!-- Formulário de Login -->
+        <div id="login-form" class="auth-form active">
+          <h2>Entrar</h2>
+          <form id="login-form-element">
+            <div class="form-group">
+              <input
+                type="email"
+                id="login-email"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="password"
+                id="login-password"
+                placeholder="Senha"
+                required
+              />
+            </div>
+            <button type="submit" class="auth-btn">Entrar</button>
+          </form>
+          <p class="auth-switch">
+            Não tem uma conta? <a href="#" id="show-register">Cadastre-se</a>
+          </p>
+        </div>
+
+        <!-- Formulário de Registro -->
+        <div id="register-form" class="auth-form">
+          <h2>Cadastrar</h2>
+          <form id="register-form-element">
+            <div class="form-group">
+              <input
+                type="text"
+                id="register-name"
+                placeholder="Nome completo"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="email"
+                id="register-email"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="password"
+                id="register-password"
+                placeholder="Senha (mín. 6 caracteres)"
+                required
+              />
+            </div>
+            <button type="submit" class="auth-btn">Cadastrar</button>
+          </form>
+          <p class="auth-switch">
+            Já tem uma conta? <a href="#" id="show-login">Entrar</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aplicação Principal -->
+    <div id="app-container" class="container" style="display: none">
       <div class="app-header">
         <div class="header-top">
           <h1>Lista de Tarefas</h1>
-          <button id="theme-toggle" class="theme-toggle" title="Alternar modo escuro">
-            <i class="fas fa-moon"></i>
-          </button>
+          <div class="header-actions">
+            <button id="dashboard-toggle" class="action-btn" title="Dashboard">
+              <i class="fas fa-chart-bar"></i>
+            </button>
+            <button
+              id="theme-toggle"
+              class="theme-toggle"
+              title="Alternar modo escuro"
+            >
+              <i class="fas fa-moon"></i>
+            </button>
+            <div class="user-menu">
+              <button id="user-menu-toggle" class="user-btn">
+                <i class="fas fa-user"></i>
+                <span id="user-name">Usuário</span>
+              </button>
+              <div id="user-dropdown" class="user-dropdown">
+                <a href="#" id="profile-link"
+                  ><i class="fas fa-user-cog"></i> Perfil</a
+                >
+                <a href="#" id="logout-link"
+                  ><i class="fas fa-sign-out-alt"></i> Sair</a
+                >
+              </div>
+            </div>
+          </div>
         </div>
         <p class="app-description">
           Organize suas tarefas de forma simples e eficiente
         </p>
       </div>
 
+      <!-- Filtros e Controles -->
+      <div class="controls-container">
+        <div class="filters">
+          <select id="category-filter">
+            <option value="">Todas as categorias</option>
+            <option value="Trabalho">Trabalho</option>
+            <option value="Pessoal">Pessoal</option>
+            <option value="Estudos">Estudos</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Compras">Compras</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Família">Família</option>
+            <option value="Geral">Geral</option>
+          </select>
+
+          <select id="priority-filter">
+            <option value="">Todas as prioridades</option>
+            <option value="baixa">Baixa</option>
+            <option value="média">Média</option>
+            <option value="alta">Alta</option>
+            <option value="urgente">Urgente</option>
+          </select>
+
+          <select id="status-filter">
+            <option value="">Todas</option>
+            <option value="false">Pendentes</option>
+            <option value="true">Concluídas</option>
+            <option value="overdue">Atrasadas</option>
+          </select>
+
+          <select id="sort-select">
+            <option value="createdAt">Data de criação</option>
+            <option value="dueDate">Data de vencimento</option>
+            <option value="priority">Prioridade</option>
+            <option value="title">Título</option>
+          </select>
+
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Buscar tarefas..."
+          />
+        </div>
+      </div>
+
+      <!-- Formulário de Nova Tarefa -->
       <div class="input-container">
-        <input
-          type="text"
-          id="task-input"
-          placeholder="Adicione uma nova tarefa..."
-        />
-        <button id="add-button">Adicionar</button>
+        <form id="task-form" class="task-form">
+          <input
+            type="text"
+            id="task-input"
+            placeholder="Adicione uma nova tarefa..."
+            required
+          />
+          <div class="task-details">
+            <select id="task-category">
+              <option value="Geral">Geral</option>
+              <option value="Trabalho">Trabalho</option>
+              <option value="Pessoal">Pessoal</option>
+              <option value="Estudos">Estudos</option>
+              <option value="Saúde">Saúde</option>
+              <option value="Compras">Compras</option>
+              <option value="Lazer">Lazer</option>
+              <option value="Família">Família</option>
+            </select>
+
+            <select id="task-priority">
+              <option value="média">Média</option>
+              <option value="baixa">Baixa</option>
+              <option value="alta">Alta</option>
+              <option value="urgente">Urgente</option>
+            </select>
+
+            <input type="date" id="task-due-date" title="Data de vencimento" />
+
+            <button type="submit" id="add-button">
+              <i class="fas fa-plus"></i>
+              Adicionar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="dashboard" class="dashboard" style="display: none">
+        <div class="dashboard-header">
+          <h2>Dashboard</h2>
+          <button id="close-dashboard" class="close-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+            <div class="stat-info">
+              <h3 id="total-tasks">0</h3>
+              <p>Total de Tarefas</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+              <h3 id="completed-tasks">0</h3>
+              <p>Concluídas</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+              <h3 id="pending-tasks">0</h3>
+              <p>Pendentes</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="overdue-tasks">0</h3>
+              <p>Atrasadas</p>
+            </div>
+          </div>
+        </div>
+        <div class="charts-container">
+          <div class="chart-card">
+            <h3>Tarefas por Categoria</h3>
+            <div id="category-chart"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Tarefas por Prioridade</h3>
+            <div id="priority-chart"></div>
+          </div>
+        </div>
       </div>
 
       <div class="tasks-container">
+        <div class="tasks-header">
+          <h3>Suas Tarefas</h3>
+          <div class="tasks-count">
+            <span id="tasks-count">0 tarefas</span>
+          </div>
+        </div>
         <ul id="tasks-list">
           <!-- As tarefas serão adicionadas aqui pelo JavaScript -->
         </ul>
+        <div id="loading" class="loading" style="display: none">
+          <i class="fas fa-spinner fa-spin"></i>
+          Carregando...
+        </div>
       </div>
     </div>
+
+    <!-- Modal de Notificação -->
+    <div id="notification" class="notification"></div>
 
     <footer class="footer">
       <p>
@@ -71,6 +315,9 @@
       </div>
     </footer>
 
+    <script src="Assets/JS/api.js"></script>
+    <script src="Assets/JS/auth.js"></script>
+    <script src="Assets/JS/taskManager.js"></script>
     <script src="Assets/JS/script.js"></script>
   </body>
 </html>
